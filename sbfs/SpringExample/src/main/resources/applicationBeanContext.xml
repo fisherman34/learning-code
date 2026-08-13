@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- bean definitions here -->
+    <bean id="myBean" class="car.example.bean.MyBean">
+        <!--
+            MyBeanのmessageプロパティに値を設定する。
+
+            name="message"
+                → MyBeanの「message」プロパティを指定する。
+                → Springは対応するsetterメソッドである
+                  setMessage()を呼び出す。
+
+            value="I am a first bean"
+                → messageプロパティに設定する値。
+
+            つまり、Springは内部的に概ね以下の処理を行う：
+
+                MyBean myBean = new MyBean();
+                myBean.setMessage("I am a first bean");
+            <property name="message"> を使って message に値を設定する場合、
+            基本的には setMessage() が必要です。
+        -->
+        <property name="message" value="I am a first bean"/>
+    </bean>
+
+</beans>
