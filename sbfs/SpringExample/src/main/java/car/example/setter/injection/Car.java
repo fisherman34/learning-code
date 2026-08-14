@@ -1,10 +1,9 @@
-package car.example.constructor.injection;
+package car.example.setter.injection;
 
 public class Car {
     private Specification specification;
 
-    // コンストラクタインジェクションを使用してSpecificationを注入
-    public Car(Specification specification) {
+    public void setSpecification(Specification specification) {
         this.specification = specification;
     }
 

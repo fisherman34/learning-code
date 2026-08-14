@@ -1,12 +1,15 @@
-package car.example.constructor.injection;
+package com.example.autowire.constructor;
 
 public class Car {
     private Specification specification;
 
-    // コンストラクタインジェクションを使用してSpecificationを注入
     public Car(Specification specification) {
         this.specification = specification;
     }
+
+//    public void setSpecification(Specification specification) {
+//        this.specification = specification;
+//    }
 
     public void displayDetails() {
         System.out.println("Car Details: " + specification.toString());

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- bean definitions here -->
+    <bean id="specification" class="com.example.autowire.type.Specification">
+        <property name="make" value="Toyota"/>
+        <property name="model" value="Corolla"/>
+    </bean>
+
+<!--    <bean id="specification1" class="com.example.autowire.type.Specification">-->
+<!--        <property name="make" value="Toyota1"/>-->
+<!--        <property name="model" value="Corolla1"/>-->
+<!--    </bean>-->
+
+    <!--
+        CarクラスのBeanを定義する。
+        BeanのIDは「myCar」。
+
+        autowire="byType" を指定すると、
+        Carクラスのプロパティの「型」を基準にして、
+        Springが注入するBeanを自動的に探す。
+
+        例えばCarクラスが、
+
+            private Specification specification;
+
+            public void setSpecification(Specification specification) {
+                this.specification = specification;
+            }
+
+        のようになっている場合、
+
+            specification
+                  ↓
+            型: Specification
+                  ↓
+            Springコンテナから
+            Specification型のBeanを検索
+                  ↓
+            setSpecification(...) を呼び出す
+
+        という処理が行われる。
+
+        このXMLでは、
+
+            id="specification"
+            class="com.example.autowire.type.Specification"
+
+        というBeanが1つだけ存在するため、　★重要
+        そのBeanが自動的に注入される。
+
+        もし、上記のコメントアウトしているBeanを有効にすると、
+        Specification型のBeanが2つ存在することになります。
+        すると、Springはどちらを注入すればよいか判断できません。
+        そのため、通常は NoUniqueBeanDefinitionException などのエラーになります。
+    -->
+    <bean id="myCar" class="com.example.autowire.type.Car" autowire="byType">
+    </bean>
+
+</beans>

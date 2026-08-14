@@ -1,19 +1,21 @@
 package com.loose.coupling;
 
+import car.example.constructor.injection.Car;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 public class LooseCouplingExample {
     public static void main(String[] args) {
-        UserDataProvider dataProvider = new UserDatabaseProvider();
-        UserManager userManagerWithDB = new UserManager(dataProvider);
+        ApplicationContext context = new ClassPathXmlApplicationContext("applicationLooseCouplingExample.xml");
+        UserManager userManagerWithDB = (UserManager) context.getBean("userManagerWithNewDB");
         String userInfo = userManagerWithDB.getUserInfo();
         System.out.println(userInfo);
 
-        UserDataProvider webServiceDataProvider = new WebServiceDataProvider();
-        UserManager userManagerWithWS = new UserManager(webServiceDataProvider);
+        UserManager userManagerWithWS = (UserManager) context.getBean("userManagerWithWS");
         String userInfoWS = userManagerWithWS.getUserInfo();
         System.out.println(userInfoWS);
 
-        UserDataProvider newDatabaseProvider = new NewDatabaseProvider();
-        UserManager userManagerWithNewDB = new UserManager(newDatabaseProvider);
+        UserManager userManagerWithNewDB = (UserManager) context.getBean("userManagerWithNewDB");
         String userInfoNewDB = userManagerWithNewDB.getUserInfo();
         System.out.println(userInfoNewDB);
     }

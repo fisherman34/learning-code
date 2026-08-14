@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- bean definitions here -->
+    <bean id="specification" class="com.example.autowire.constructor.Specification">
+        <property name="make" value="Toyota"/>
+        <property name="model" value="Corolla"/>
+    </bean>
+
+<!--    <bean id="specification1" class="com.example.autowire.type.Specification">-->
+<!--        <property name="make" value="Toyota1"/>-->
+<!--        <property name="model" value="Corolla1"/>-->
+<!--    </bean>-->
+
+    <!--
+        CarクラスのBeanを定義する。
+        BeanのIDは「myCar」。
+
+        autowire="constructor" を指定すると、
+        Carクラスのコンストラクタの引数の型を基準にして、
+        Springが該当するBeanを自動的に探して注入する。
+
+        例えばCarクラスが、
+
+            public Car(Specification specification) {
+                this.specification = specification;
+            }
+
+        のようなコンストラクタを持っている場合、
+
+            コンストラクタの引数
+                  ↓
+            Specification型
+                  ↓
+            Springコンテナから
+            Specification型のBeanを検索
+                  ↓
+            specification Beanを発見
+                  ↓
+            Car(Specification) を呼び出す
+
+        という処理が行われる。
+
+        したがって、以下のような
+        <constructor-arg> を明示的に書く必要がない。
+
+            <constructor-arg ref="specification"/>
+
+        この設定は、Constructor Injectionを
+        autowiringによって自動的に行う方法である。
+    -->
+    <bean id="myCar" class="com.example.autowire.constructor.Car" autowire="constructor">
+    </bean>
+
+</beans>

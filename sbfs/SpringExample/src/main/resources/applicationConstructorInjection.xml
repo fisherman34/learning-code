@@ -11,6 +11,15 @@
     </bean>
 
     <bean id="myCar" class="car.example.constructor.injection.Car">
+        <!--
+        Carクラスのコンストラクタに
+        「carSpecification」というBeanを引数として渡す。
+
+        ref="carSpecification" は、
+        value="..." のように文字列を渡すのではなく、
+        Springコンテナに登録されている
+        carSpecification Beanへの参照を渡すことを意味する。
+    -->
         <constructor-arg ref="carSpecification"/>
     </bean>
 
