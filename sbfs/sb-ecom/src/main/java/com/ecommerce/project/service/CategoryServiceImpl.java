@@ -1,7 +1,9 @@
 package com.ecommerce.project.service;
 
 import com.ecommerce.project.model.Category;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,20 +56,14 @@ public class CategoryServiceImpl implements CategoryService{
                 //
                 // 一致する場合 → true
                 // 一致しない場合 → false
-                .findFirst().get();
+                .findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
                 // filter()によって残ったCategoryのうち、
                 // 最初の1件を取得する。
                 //
                 // 戻り値はCategoryそのものではなく、
                 // Optional<Category>になる。
                 //
-                // Categoryが見つかった場合：
-                // Optional[Category(id=2)]
-                //
-                // 見つからなかった場合：
-                // Optional.empty()
-                //.get();
-                // Optionalの中からCategoryオブジェクトを取り出す。
+
         categories.remove(category);
         return "Category with categoryID: " + categoryId + " deleted successfully";
     }
