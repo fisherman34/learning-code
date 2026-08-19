@@ -56,13 +56,48 @@ public class CategoryServiceImpl implements CategoryService{
                 //
                 // 一致する場合 → true
                 // 一致しない場合 → false
-                .findFirst().orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
-                // filter()によって残ったCategoryのうち、
-                // 最初の1件を取得する。
+                .findFirst()
+                // findFirst()：
+                // Streamの中から条件に一致する最初の要素を取得する。
                 //
-                // 戻り値はCategoryそのものではなく、
-                // Optional<Category>になる。
+                // ただし、戻り値は Category ではなく、
+                // Optional<Category> になる。
                 //
+                // Categoryが見つかった場合：
+                // → Optional<Category> にCategoryが格納される。
+                //
+                // Categoryが見つからなかった場合：
+                // → Optional.empty() になる。
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
+                // orElseThrow()：
+                // Optionalの中に値が存在する場合は、
+                // その値（Category）を取得して返す。
+                //
+                // Optionalが空の場合は、
+                // 指定した例外をスローする。
+                //
+                // () -> new ResponseStatusException(...)
+                // ↑
+                // Categoryが見つからなかった場合に実行される
+                // Lambda式。
+                //
+                // new ResponseStatusException(...)
+                // → HTTPエラーを表す例外オブジェクトを生成する。
+                //
+                // HttpStatus.NOT_FOUND
+                // → HTTPステータスコード「404 Not Found」。
+                //    「指定されたリソースが存在しない」という意味。
+                //
+                // "Resource not found"
+                // → クライアントに返すエラーメッセージ。
+                //    「リソースが見つかりません」という意味。
+                //
+                // つまり、
+                // 指定されたcategoryIdのCategoryが存在する
+                //     → Categoryをcategory変数に代入
+                //
+                // 存在しない
+                //     → HTTP 404 Not Found例外をスローする
 
         categories.remove(category);
         return "Category with categoryID: " + categoryId + " deleted successfully";
