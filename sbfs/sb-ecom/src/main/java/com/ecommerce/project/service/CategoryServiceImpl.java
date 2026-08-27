@@ -1,6 +1,8 @@
 package com.ecommerce.project.service;
 
 import com.ecommerce.project.model.Category;
+import com.ecommerce.project.repositories.CategoryRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,12 +16,15 @@ import java.util.Optional;
 // そのため、他のクラスから依存性注入（Dependency Injection）で利用できる
 @Service
 public class CategoryServiceImpl implements CategoryService{
-    private List<Category> categories = new ArrayList<>();
+    //private List<Category> categories = new ArrayList<>();
     private Long nextId = 1L;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     @Override
     public List<Category> getAllCategories() {
-        return categories;
+        return categoryRepository.findAll();
     }
 
     @Override
@@ -36,86 +41,39 @@ public class CategoryServiceImpl implements CategoryService{
         // 次にcreateCategory()を呼び出すと、
         // → category.setCategoryId(2);
         // → その後 nextId は 3 になる。
-        category.setCategoryId(nextId++);
-        categories.add(category);
+        // category.setCategoryId(nextId++);
+        categoryRepository.save(category);
     }
 
     @Override
     public String deleteCategory(Long categoryId) {
-        // Stream APIを使って、指定された categoryId を持つ
-        // Category をリストから検索して取得している
-        Category category = categories.stream()
-                .filter(c -> c.getCategoryId().equals(categoryId))
-                // ↑
-                // c は categories の中にある「現在処理しているCategoryオブジェクト」
-                //
-                // c.getCategoryId()
-                // → 現在のCategoryのcategoryIdを取得する
-                //
-                // .equals(categoryId)
-                // → 取得したcategoryIdと、メソッドの引数categoryIdを比較する
-                //
-                // 一致する場合 → true
-                // 一致しない場合 → false
-                .findFirst()
-                // findFirst()：
-                // Streamの中から条件に一致する最初の要素を取得する。
-                //
-                // ただし、戻り値は Category ではなく、
-                // Optional<Category> になる。
-                //
-                // Categoryが見つかった場合：
-                // → Optional<Category> にCategoryが格納される。
-                //
-                // Categoryが見つからなかった場合：
-                // → Optional.empty() になる。
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
-                // orElseThrow()：
-                // Optionalの中に値が存在する場合は、
-                // その値（Category）を取得して返す。
-                //
-                // Optionalが空の場合は、
-                // 指定した例外をスローする。
-                //
-                // () -> new ResponseStatusException(...)
-                // ↑
-                // Categoryが見つからなかった場合に実行される
-                // Lambda式。
-                //
-                // new ResponseStatusException(...)
-                // → HTTPエラーを表す例外オブジェクトを生成する。
-                //
-                // HttpStatus.NOT_FOUND
-                // → HTTPステータスコード「404 Not Found」。
-                //    「指定されたリソースが存在しない」という意味。
-                //
-                // "Resource not found"
-                // → クライアントに返すエラーメッセージ。
-                //    「リソースが見つかりません」という意味。
-                //
-                // つまり、
-                // 指定されたcategoryIdのCategoryが存在する
-                //     → Categoryをcategory変数に代入
-                //
-                // 存在しない
-                //     → HTTP 404 Not Found例外をスローする
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
 
-        categories.remove(category);
+        categoryRepository.delete(category);
         return "Category with categoryID: " + categoryId + " deleted successfully";
     }
 
     @Override
     public Category updateCategory(Category category, Long categoryId) {
-        Optional<Category> optionalCategory = categories.stream()
-                .filter(c -> c.getCategoryId().equals(categoryId))
-                .findFirst();
+        Category savedCategory = categoryRepository.findById(categoryId)
+                .orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Resource not found"));
 
-        if (optionalCategory.isPresent()) {
-            Category existingCategory = optionalCategory.get();
-            existingCategory.setCategoryName(category.getCategoryName());
-            return existingCategory;
-        } else {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found");
-        }
+        category.setCategoryId(categoryId);
+        // Categoryオブジェクトをデータベースに保存する。
+        // Spring Data JPAのsave()メソッドを呼び出すことで、
+        // CategoryエンティティをDBのcategoriesテーブルに保存する。
+        //
+        // 新規のCategoryの場合：
+        // → INSERT文が実行され、DBに新しいレコードが追加される。
+        //
+        // 既存のCategoryの場合：
+        // → UPDATE文が実行され、既存のレコードが更新される。
+        //
+        // save()の戻り値として、保存されたCategoryオブジェクトが返される。
+        savedCategory = categoryRepository.save(category);
+        return savedCategory;
+
     }
 }
