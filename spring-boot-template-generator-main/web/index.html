@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Local Spring Initializr</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <h1>Local Spring Initializr</h1>
+  <p class="subtitle">Generates Spring Boot <strong>2.x</strong> and <strong>3.x</strong> project skeletons &mdash; open the result in IntelliJ IDEA.</p>
+</header>
+
+<main class="layout">
+
+  <section class="panel" id="left-panel">
+
+    <fieldset class="field-group" id="buildtool-group">
+      <legend>Project</legend>
+      <label><input type="radio" name="buildTool" value="maven" checked> Maven</label>
+      <label><input type="radio" name="buildTool" value="gradle-groovy"> Gradle - Groovy</label>
+      <label><input type="radio" name="buildTool" value="gradle-kotlin"> Gradle - Kotlin</label>
+    </fieldset>
+
+    <fieldset class="field-group" id="language-group">
+      <legend>Language</legend>
+      <label><input type="radio" name="language" value="java" checked> Java</label>
+      <label><input type="radio" name="language" value="kotlin"> Kotlin</label>
+    </fieldset>
+
+    <fieldset class="field-group" id="packaging-group">
+      <legend>Packaging</legend>
+      <label><input type="radio" name="packaging" value="jar" checked> Jar</label>
+      <label><input type="radio" name="packaging" value="war"> War</label>
+    </fieldset>
+
+    <fieldset class="field-group" id="bootversion-group">
+      <legend>Spring Boot Version</legend>
+      <div id="boot-version-list" class="boot-version-list">Loading&hellip;</div>
+    </fieldset>
+
+    <fieldset class="field-group" id="javaversion-group">
+      <legend>Java Version</legend>
+      <select id="javaVersion"></select>
+    </fieldset>
+
+    <fieldset class="field-group" id="metadata-group">
+      <legend>Project Metadata</legend>
+
+      <label class="text-field">
+        Group
+        <input type="text" id="groupId" value="com.example">
+      </label>
+
+      <label class="text-field">
+        Artifact
+        <input type="text" id="artifactId" value="demo">
+      </label>
+
+      <label class="text-field">
+        Name
+        <input type="text" id="name" value="demo">
+      </label>
+
+      <label class="text-field">
+        Description
+        <input type="text" id="description" value="Demo project for Spring Boot">
+      </label>
+
+      <label class="text-field">
+        Package name
+        <input type="text" id="packageName" value="com.example.demo">
+      </label>
+    </fieldset>
+
+  </section>
+
+  <section class="panel" id="right-panel">
+    <div class="dep-header">
+      <h2>Dependencies</h2>
+      <input type="search" id="depSearch" placeholder="Search dependencies&hellip;" autocomplete="off">
+    </div>
+
+    <div id="selected-chips" class="chip-row"></div>
+
+    <div id="dep-groups" class="dep-groups">Loading&hellip;</div>
+  </section>
+
+</main>
+
+<footer class="actionbar">
+  <div id="status-message" class="status-message"></div>
+  <button id="generate-btn" type="button">Generate &darr;</button>
+</footer>
+
+<script src="/app.js"></script>
+</body>
+</html>

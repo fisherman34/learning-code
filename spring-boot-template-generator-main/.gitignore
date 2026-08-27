@@ -1,0 +1,21 @@
+# Compiled classes
+*.class
+
+# Build output, if anyone runs javac/mvn/gradle manually against this repo
+target/
+build/
+out/
+
+# Local scratch artifacts from testing the generator
+*.zip
+*.log
+
+# IDE
+.idea/
+*.iml
+*.iws
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
