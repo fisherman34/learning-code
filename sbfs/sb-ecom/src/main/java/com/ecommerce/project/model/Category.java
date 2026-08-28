@@ -36,6 +36,9 @@ public class Category {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long categoryId;
 
+    // このフィールドが空（null、空文字、空白のみ）でないことを検証する。
+    // バリデーションエラーが発生すると、
+    // Spring BootのMethodArgumentNotValidExceptionが発生し、
     @NotBlank
     private String categoryName;
 

@@ -39,6 +39,7 @@ public class CategoryController {
     //    Categoryクラスに設定されたBean Validationを実行する。
     //    バリデーションエラーがある場合、通常はメソッドの処理を実行せず、
     //    Spring Bootがエラーレスポンスを返す。
+    // @RequestBody の入力値をバリデーションする場合、@Valid はController層に置くのが一般的
     public ResponseEntity<String> createCategory(@Valid @RequestBody Category category) {
         categoryService.createCategory(category);
         // ダイヤモンド演算子
