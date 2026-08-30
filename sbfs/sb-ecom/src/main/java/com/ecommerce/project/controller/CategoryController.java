@@ -48,33 +48,18 @@ public class CategoryController {
 
     @DeleteMapping("/admin/categories/{categoryId}")
     public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId) {
-        try {
-            String status = categoryService.deleteCategory(categoryId);
-            //return  new ResponseEntity<>(status, HttpStatus.OK);
-            //return ResponseEntity.ok(status);
-            // HTTPステータスコード「200 OK」を設定する
-            // HTTPレスポンスのボディ（本文）にstatusの値を設定する
-            return ResponseEntity.status(HttpStatus.OK).body(status);
-        } catch (ResponseStatusException e) {
-            // 例外に設定されているエラーメッセージを取得し、
-            // HTTPレスポンスのボディに設定する
-            // 最終的に、
-            // 「HTTPステータスコード + エラーメッセージ」
-            // というResponseEntity<String>を作成して返す
-
-            return new ResponseEntity<>(e.getReason(), e.getStatusCode());
-        }
-
+        String status = categoryService.deleteCategory(categoryId);
+        //return  new ResponseEntity<>(status, HttpStatus.OK);
+        //return ResponseEntity.ok(status);
+        // HTTPステータスコード「200 OK」を設定する
+        // HTTPレスポンスのボディ（本文）にstatusの値を設定する
+        return ResponseEntity.status(HttpStatus.OK).body(status);
     }
 
     @PutMapping("/public/categories/{categoryId}")
-    public ResponseEntity<String> updateCategory(@RequestBody Category category,
+    public ResponseEntity<String> updateCategory(@Valid @RequestBody Category category,
                                                  @PathVariable Long categoryId) {
-        try{
-            Category savedCategory = categoryService.updateCategory(category, categoryId);
-            return new ResponseEntity<>("Category with ID " + categoryId + " updated successfully", HttpStatus.OK);
-        } catch (ResponseStatusException e) {
-            return new ResponseEntity<>(e.getReason(), e.getStatusCode());
-        }
+        Category savedCategory = categoryService.updateCategory(category, categoryId);
+        return new ResponseEntity<>("Category with ID " + categoryId + " updated successfully", HttpStatus.OK);
     }
 }
