@@ -3,7 +3,10 @@ package com.ecommerce.project.service;
 import com.ecommerce.project.exceptions.APIException;
 import com.ecommerce.project.exceptions.ResourceNotFoundException;
 import com.ecommerce.project.model.Category;
+import com.ecommerce.project.payload.CategoryDTO;
+import com.ecommerce.project.payload.CategoryResponse;
 import com.ecommerce.project.repositories.CategoryRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,19 +21,63 @@ public class CategoryServiceImpl implements CategoryService{
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
     @Override
-    public List<Category> getAllCategories() {
+    public CategoryResponse getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
         if (categories.isEmpty()) {
             throw new APIException("No category created now!");
         }
-        return categories;
+
+        // categories（List<Category>）をStream<Category>に変換する。
+        //
+        // もともとのcategoriesは、
+        //
+        // List<Category>
+        //
+        // という「Categoryオブジェクトのリスト」。
+        //
+        // stream()を呼び出すことで、
+        //
+        // List<Category>
+        //      ↓
+        // Stream<Category>
+        //
+        // となり、各Categoryに対して処理を行えるようになる。
+        List<CategoryDTO> categoryDTOs = categories.stream()
+                // Stream内の各CategoryオブジェクトをCategoryDTOに変換する。
+                //
+                // map()は、Streamの各要素に対して指定した処理を行い、
+                // 処理結果から新しいStreamを作成するメソッド。
+                //
+                // category
+                //   ↓
+                // modelMapper.map(category, CategoryDTO.class)
+                //   ↓
+                // CategoryDTO
+                //
+                // ModelMapperがCategoryのフィールド値をCategoryDTOへコピーする。
+                .map(category -> modelMapper.map(category, CategoryDTO.class))
+                // Stream<CategoryDTO>をList<CategoryDTO>に変換する。
+                //
+                // 最終的にcategoryDTOsには、
+                // categoriesに含まれていたCategoryを
+                // CategoryDTOへ変換したリストが格納される。
+                .toList();
+        CategoryResponse categoryResponse = new CategoryResponse();
+        // setContent()はCategoryResponseクラスに定義されているsetterメソッド
+        categoryResponse.setContent(categoryDTOs);
+        return categoryResponse;
     }
 
     @Override
-    public void createCategory(Category category) {
-        Category savedCategory = categoryRepository.findByCategoryName(category.getCategoryName());
-        if (savedCategory != null) {
+    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
+        Category category = modelMapper.map(categoryDTO, Category.class);
+
+        Category categoryFromDb = categoryRepository.findByCategoryName(category.getCategoryName());
+        if (categoryFromDb != null) {
             /*
             CategoryServiceImpl.createCategory() does: throw new APIException("...")
 
@@ -50,7 +97,8 @@ public class CategoryServiceImpl implements CategoryService{
             */
             throw new APIException("Category with name '" + category.getCategoryName() + "' already exists!");
         }
-        categoryRepository.save(category);
+        Category savedCategory = categoryRepository.save(category);
+        return modelMapper.map(savedCategory, CategoryDTO.class);
     }
 
     @Override
@@ -64,11 +112,12 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public Category updateCategory(Category category, Long categoryId) {
+    public CategoryDTO updateCategory(CategoryDTO categoryDTO, Long categoryId) {
         Category savedCategory = categoryRepository.findById(categoryId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Category", "categoryId", categoryId));
 
+        Category category = modelMapper.map(categoryDTO, Category.class);
         category.setCategoryId(categoryId);
         // Categoryオブジェクトをデータベースに保存する。
         // Spring Data JPAのsave()メソッドを呼び出すことで、
@@ -82,7 +131,8 @@ public class CategoryServiceImpl implements CategoryService{
         //
         // save()の戻り値として、保存されたCategoryオブジェクトが返される。
         savedCategory = categoryRepository.save(category);
-        return savedCategory;
+        CategoryDTO savedCategoryDTO = modelMapper.map(savedCategory, CategoryDTO.class);
+        return savedCategoryDTO;
 
     }
 }
