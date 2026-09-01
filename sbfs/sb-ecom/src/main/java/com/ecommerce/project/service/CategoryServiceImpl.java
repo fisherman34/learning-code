@@ -102,13 +102,13 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public String deleteCategory(Long categoryId) {
+    public CategoryDTO deleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 // orElseThrow() に渡しているのは例外を生成するための Supplier（ラムダ式）
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
 
         categoryRepository.delete(category);
-        return "Category with categoryID: " + categoryId + " deleted successfully";
+        return modelMapper.map(category, CategoryDTO.class);
     }
 
     @Override
@@ -131,8 +131,7 @@ public class CategoryServiceImpl implements CategoryService{
         //
         // save()の戻り値として、保存されたCategoryオブジェクトが返される。
         savedCategory = categoryRepository.save(category);
-        CategoryDTO savedCategoryDTO = modelMapper.map(savedCategory, CategoryDTO.class);
-        return savedCategoryDTO;
+        return modelMapper.map(savedCategory, CategoryDTO.class);
 
     }
 }

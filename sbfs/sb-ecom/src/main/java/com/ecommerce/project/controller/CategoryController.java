@@ -1,6 +1,5 @@
 package com.ecommerce.project.controller;
 
-import com.ecommerce.project.model.Category;
 import com.ecommerce.project.payload.CategoryDTO;
 import com.ecommerce.project.payload.CategoryResponse;
 import com.ecommerce.project.service.CategoryService;
@@ -23,8 +22,7 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    //@GetMapping("/public/categories")
-    @RequestMapping(value = "/public/categories", method = RequestMethod.GET)
+    @GetMapping("/public/categories")
     public ResponseEntity<CategoryResponse> getAllCategories() {
         CategoryResponse categoryResponse = categoryService.getAllCategories();
         // ResponseEntity は、Spring BootのControllerから、
@@ -32,8 +30,7 @@ public class CategoryController {
         return new ResponseEntity<>(categoryResponse, HttpStatus.OK);
     }
 
-    //@PostMapping("/public/categories")
-    @RequestMapping(value = "/public/categories", method = RequestMethod.POST)
+    @PostMapping("/public/categories")
     // @Valid
     // → @RequestBodyで受け取ったCategoryオブジェクトに対して、
     //    Categoryクラスに設定されたBean Validationを実行する。
@@ -47,19 +44,15 @@ public class CategoryController {
     }
 
     @DeleteMapping("/admin/categories/{categoryId}")
-    public ResponseEntity<String> deleteCategory(@PathVariable Long categoryId) {
-        String status = categoryService.deleteCategory(categoryId);
-        //return  new ResponseEntity<>(status, HttpStatus.OK);
-        //return ResponseEntity.ok(status);
-        // HTTPステータスコード「200 OK」を設定する
-        // HTTPレスポンスのボディ（本文）にstatusの値を設定する
-        return ResponseEntity.status(HttpStatus.OK).body(status);
+    public ResponseEntity<CategoryDTO> deleteCategory(@PathVariable Long categoryId) {
+        CategoryDTO deletedCategoryDTO = categoryService.deleteCategory(categoryId);
+        return new ResponseEntity<>(deletedCategoryDTO, HttpStatus.OK);
     }
 
     @PutMapping("/public/categories/{categoryId}")
-    public ResponseEntity<String> updateCategory(@Valid @RequestBody CategoryDTO categoryDTO,
+    public ResponseEntity<CategoryDTO> updateCategory(@Valid @RequestBody CategoryDTO categoryDTO,
                                                  @PathVariable Long categoryId) {
         CategoryDTO savedCategoryDTO = categoryService.updateCategory(categoryDTO, categoryId);
-        return new ResponseEntity<>("Category with ID " + categoryId + " updated successfully", HttpStatus.OK);
+        return new ResponseEntity<>(savedCategoryDTO, HttpStatus.OK);
     }
 }
