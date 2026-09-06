@@ -18,6 +18,12 @@ public class CategoryController {
 
     private CategoryService categoryService;
 
+    @GetMapping("/echo")
+    // name = "message" は「HTTPリクエストの中にある、message という名前のパラメータを取得してください」という指定
+    public ResponseEntity<String> echoMessage(@RequestParam(name = "message") String message) {
+        return new ResponseEntity<>("Echoed message: " + message, HttpStatus.OK);
+    }
+
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
