@@ -18,19 +18,16 @@ public class CategoryController {
 
     private CategoryService categoryService;
 
-    @GetMapping("/echo")
-    // name = "message" は「HTTPリクエストの中にある、message という名前のパラメータを取得してください」という指定
-    public ResponseEntity<String> echoMessage(@RequestParam(name = "message") String message) {
-        return new ResponseEntity<>("Echoed message: " + message, HttpStatus.OK);
-    }
-
     public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
     @GetMapping("/public/categories")
-    public ResponseEntity<CategoryResponse> getAllCategories() {
-        CategoryResponse categoryResponse = categoryService.getAllCategories();
+    public ResponseEntity<CategoryResponse> getAllCategories(
+        @RequestParam(name = "pageNumber") Integer pageNumber,
+        @RequestParam(name = "pageSize") Integer pageSize
+    ) {
+        CategoryResponse categoryResponse = categoryService.getAllCategories(pageNumber, pageSize);
         // ResponseEntity は、Spring BootのControllerから、
         // HTTPレスポンスのステータス・ヘッダー・ボディを明示的に指定して返すためのクラス
         return new ResponseEntity<>(categoryResponse, HttpStatus.OK);

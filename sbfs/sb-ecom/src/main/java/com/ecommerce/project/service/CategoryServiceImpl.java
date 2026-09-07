@@ -8,6 +8,9 @@ import com.ecommerce.project.payload.CategoryResponse;
 import com.ecommerce.project.repositories.CategoryRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,8 +28,22 @@ public class CategoryServiceImpl implements CategoryService{
     private ModelMapper modelMapper;
 
     @Override
-    public CategoryResponse getAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
+    public CategoryResponse getAllCategories(Integer pageNumber, Integer pageSize) {
+
+        // ページネーションの設定情報（Pageable）を作成する。
+        // PageRequest.of()を使用して、取得するページ番号と1ページあたりの件数を指定する。
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize);
+        // findAll(pageDetails) は、Pageable型の pageDetails に指定された
+        // 「ページ番号」と「1ページあたりの取得件数」に従って、
+        // データベースからCategoryを取得する。
+        //
+        // Page<Category>は、単なるCategoryのリストではなく、
+        // 取得したCategoryのデータに加えて、
+        // ページネーションに関する情報も保持している。
+        Page<Category> categoryPage = categoryRepository.findAll(pageDetails);
+        // getContent()は、Pageオブジェクトに含まれている
+        // 「現在のページのデータ」をListとして返すメソッド。
+        List<Category> categories = categoryPage.getContent();
         if (categories.isEmpty()) {
             throw new APIException("No category created now!");
         }
