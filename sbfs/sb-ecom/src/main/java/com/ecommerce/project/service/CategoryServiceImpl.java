@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,11 +29,15 @@ public class CategoryServiceImpl implements CategoryService{
     private ModelMapper modelMapper;
 
     @Override
-    public CategoryResponse getAllCategories(Integer pageNumber, Integer pageSize) {
+    public CategoryResponse getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortOrder) {
+        // Sort は Spring Data が提供している「並び順（ソート条件）」を表すクラス
+        Sort sortByAndOrder = sortOrder.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
 
         // ページネーションの設定情報（Pageable）を作成する。
         // PageRequest.of()を使用して、取得するページ番号と1ページあたりの件数を指定する。
-        Pageable pageDetails = PageRequest.of(pageNumber, pageSize);
+        Pageable pageDetails = PageRequest.of(pageNumber, pageSize, sortByAndOrder);
         // findAll(pageDetails) は、Pageable型の pageDetails に指定された
         // 「ページ番号」と「1ページあたりの取得件数」に従って、
         // データベースからCategoryを取得する。
@@ -86,6 +91,11 @@ public class CategoryServiceImpl implements CategoryService{
         CategoryResponse categoryResponse = new CategoryResponse();
         // setContent()はCategoryResponseクラスに定義されているsetterメソッド
         categoryResponse.setContent(categoryDTOs);
+        categoryResponse.setPageNumber(categoryPage.getNumber());
+        categoryResponse.setPageSize(categoryPage.getSize());
+        categoryResponse.setTotalElements(categoryPage.getTotalElements());
+        categoryResponse.setTotalPages(categoryPage.getTotalPages());
+        categoryResponse.setLastPage(categoryPage.isLast());
         return categoryResponse;
     }
 
