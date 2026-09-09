@@ -1,15 +1,18 @@
 package com.social.media.models;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 // @Entity は、このクラスをJPAのエンティティ（DBのテーブルと対応するクラス）
 // として扱うことを指定するアノテーション
 @Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class SocialUser {
     // @Id は、このフィールドをエンティティの主キー（Primary Key）として
     // 扱うことを指定するアノテーション
@@ -28,10 +31,25 @@ public class SocialUser {
     private List<Post> posts = new ArrayList<>();
 
     @ManyToMany
+    // @JoinTable は、多対多（Many-to-Many）の関連で使用する中間テーブルを定義するアノテーション
     @JoinTable(
-        name = "user_group", // 中間テーブルの名前を指定
-        joinColumns = @JoinColumn(name = "user_id"), // SocialUser側の外部キーを指定
-        inverseJoinColumns = @JoinColumn(name = "group_id") // Group側の外部キーを指定
+        // DB上に「user_group」というテーブルが作成される
+        name = "user_group",
+
+        // 中間テーブルにおける「SocialUser側」の外部キーを指定する
+        // user_group.user_id → SocialUser.id
+        // joinColumns は、このエンティティ（SocialUser）のIDを指す
+        joinColumns = @JoinColumn(name = "user_id"),
+
+        // 中間テーブルにおける「SocialGroup側」の外部キーを指定する
+        // user_group.group_id → SocialGroup.id
+        // inverseJoinColumns は、相手側のエンティティ（SocialGroup）のIDを指す
+        inverseJoinColumns = @JoinColumn(name = "group_id")
     )
     private Set<SocialGroup> groups = new HashSet<>();
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

@@ -9,6 +9,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+// @RestController
+// → このクラスをSpring MVCのREST API用Controllerとして登録する。
+// → Spring BootがこのクラスをControllerとして認識し、
+//    HTTPリクエストを受け取れるようになる。
 @RestController
 // このコントローラーが提供するすべてのAPIの共通URL（ベースパス）を「/api」に設定する
 // そのため、各メソッドの@RequestMappingや@GetMappingなどで指定したパスの先頭に「/api」が付く
@@ -23,6 +27,16 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
+    // @GetMapping("/public/categories")
+    // → HTTP GETリクエストを「/public/categories」というパスに
+    //    マッピング（割り当て）する。
+    //
+    // → つまり、クライアントから
+    //
+    //    GET /api/public/categories
+    //
+    //    というリクエストが送られると、
+    //    下の getAllCategories() メソッドが実行される。
     @GetMapping("/public/categories")
     public ResponseEntity<CategoryResponse> getAllCategories(
         @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
@@ -43,6 +57,10 @@ public class CategoryController {
     //    バリデーションエラーがある場合、通常はメソッドの処理を実行せず、
     //    Spring Bootがエラーレスポンスを返す。
     // @RequestBody の入力値をバリデーションする場合、@Valid はController層に置くのが一般的
+    // 
+    // @RequestBody は「HTTPリクエストのボディをJavaオブジェクトとして受け取る」
+    // → HTTPリクエストの「ボディ（Request Body）」に含まれるデータを
+    //    Javaオブジェクト（ここではCategoryDTO）に変換する。
     public ResponseEntity<CategoryDTO> createCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
         CategoryDTO savedCategoryDTO = categoryService.createCategory(categoryDTO);
         // ダイヤモンド演算子
