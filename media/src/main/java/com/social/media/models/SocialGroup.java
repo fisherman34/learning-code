@@ -1,5 +1,6 @@
 package com.social.media.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -30,6 +31,7 @@ public class SocialGroup {
     // "groups" はDBのテーブル名やカラム名ではなく、
     // SocialUserクラスに定義されているフィールド名を指定する
     @ManyToMany(mappedBy = "groups")
+    @JsonIgnore
     private Set<SocialUser> socialUsers = new HashSet<>();
 
     @Override

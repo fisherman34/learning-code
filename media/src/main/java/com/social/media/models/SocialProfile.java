@@ -1,5 +1,6 @@
 package com.social.media.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,5 +29,7 @@ public class SocialProfile {
     // name = "social_user" は、SocialProfileテーブルに作成する
     // 外部キーカラムの名前を「social_user」と指定している
     @JoinColumn(name = "social_user")
+
+    @JsonIgnore
     private SocialUser user;
 }
