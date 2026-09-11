@@ -20,4 +20,8 @@ public class SocialService {
     public SocialUser saveUser(SocialUser socialUser) {
         return socialUserRepository.save(socialUser);
     }
+
+    public Object deleteUser(Long id) {
+        return socialUserRepository.delete(null);
+    }
 }

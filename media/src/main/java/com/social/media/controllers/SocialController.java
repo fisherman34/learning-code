@@ -26,4 +26,9 @@ public class SocialController {
     public ResponseEntity<SocialUser> saveUser(@RequestBody SocialUser socialUser) {
         return new ResponseEntity<>(socialService.saveUser(socialUser), HttpStatus.CREATED);
     }
+
+    @DeleteMapping("/social/users")
+    public ResponseEntity<SocialUser> deleteUser() {
+        return new ResponseEntity<>(socialService.deleteUser(), HttpStatus.OK);
+    }
 }
