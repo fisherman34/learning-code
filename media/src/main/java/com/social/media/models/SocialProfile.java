@@ -32,4 +32,35 @@ public class SocialProfile {
 
     @JsonIgnore
     private SocialUser user;
+
+    private String description;
+
+    // SocialProfileとSocialUserの関連付けを設定するためのセッターメソッド
+    //
+    // 引数 socialUser には、このSocialProfileに関連付ける
+    // SocialUserオブジェクトを指定する
+    public void setSocialUser(SocialUser socialUser) {
+
+        // このSocialProfileのuserフィールドに
+        // SocialUserオブジェクトを設定する
+        this.user = socialUser;
+
+        // SocialUser側のsocialProfileフィールドが
+        // 現在のSocialProfileオブジェクトを参照しているか確認する
+        // if がないと、お互いのsetterを無限に呼び続ける可能性がある
+        if (user.getSocialProfile() != this) {
+
+            // SocialUser側のsocialProfileフィールドにも
+            // このSocialProfileオブジェクトを設定する
+            //
+            // これによって、
+            //
+            // SocialProfile → SocialUser
+            //        ↑           ↓
+            //        └───────────┘
+            //
+            // の双方向の関連付けが同期される
+            user.setSocialProfile(this);
+        }
+    }
 }

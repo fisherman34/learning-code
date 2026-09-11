@@ -23,9 +23,7 @@ public class SocialUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(mappedBy = "user")
-//    @JoinColumn(name = "social_profile_id")
-
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private SocialProfile socialProfile;
 
     @OneToMany(mappedBy = "socialUser")
@@ -52,5 +50,33 @@ public class SocialUser {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    // SocialUserとSocialProfileの関連付けを設定するためのセッターメソッド
+    //
+    // 引数 socialProfile には、このSocialUserに関連付ける
+    // SocialProfileオブジェクトを指定する
+    public void setSocialProfile(SocialProfile socialProfile) {
+        
+        // SocialProfile側のuserフィールドに、このSocialUser自身を設定する
+        //
+        // 「this」は現在のSocialUserオブジェクト自身を意味する
+        //
+        // これによって、
+        //
+        // SocialProfile.user → SocialUser
+        //
+        // という関連付けが設定される
+        socialProfile.setUser(this);
+
+         // SocialUser側のsocialProfileフィールドに、
+        // SocialProfileオブジェクトを設定する
+        //
+        // これによって、
+        //
+        // SocialUser.socialProfile → SocialProfile
+        //
+        // という関連付けが設定される
+        this.socialProfile = socialProfile;
     }
 }
