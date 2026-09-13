@@ -21,7 +21,14 @@ public class SocialService {
         return socialUserRepository.save(socialUser);
     }
 
-    public Object deleteUser(Long id) {
-        return socialUserRepository.delete(null);
+    public SocialUser deleteUser(Long id) {
+        SocialUser socialUser = socialUserRepository.findById(id)
+                // findById()はOptional<SocialUser> を返すため、orElseThrow()を使って
+                // orElseThrow() の意味: Optional の中身が存在すれば、その値を返します。
+                //存在しなければ、指定した例外を throw する
+                // .orElseThrow()に例外を生成する処理（Supplier） を渡す
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        socialUserRepository.delete(socialUser);
+        return socialUser;
     }
 }

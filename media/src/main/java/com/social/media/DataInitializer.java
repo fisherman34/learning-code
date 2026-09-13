@@ -125,6 +125,10 @@ public class DataInitializer {
             socialProfileRepository.save(profile2);
             socialProfileRepository.save(profile3);
 
+            // FETECh Types
+            System.out.println("Fetching social user with ID 1:");
+            userRepository.findById(1L);
+
         };
     }
 }
