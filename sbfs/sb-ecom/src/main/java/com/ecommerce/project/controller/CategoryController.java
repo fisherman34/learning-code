@@ -39,6 +39,27 @@ public class CategoryController {
     //    下の getAllCategories() メソッドが実行される。
     @GetMapping("/public/categories")
     public ResponseEntity<CategoryResponse> getAllCategories(
+
+        // @RequestParam
+        // → HTTPリクエストのURLに付いている「クエリパラメータ」を
+        //    Javaのメソッド引数として受け取るためのアノテーション。
+        //
+        // 例えば、以下のURLでリクエストされた場合：
+        //
+        // GET /api/public/categories?pageNumber=1&pageSize=10
+        //
+        // pageNumber の値「1」が pageNumber に、
+        // pageSize の値「10」が pageSize に渡される。
+
+        // name = "pageNumber"
+        // → URLで使用するパラメータ名を「pageNumber」に指定する。
+        //
+        // defaultValue = AppConstants.PAGE_NUMBER
+        // → pageNumber が指定されなかった場合に使用するデフォルト値。
+        //
+        // required = false
+        // → pageNumber の指定を必須にしない。
+        //    URLにpageNumberがなくてもエラーにならない。
         @RequestParam(name = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER, required = false) Integer pageNumber,
         @RequestParam(name = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
         @RequestParam(name = "sortBy", defaultValue = AppConstants.SORT_CATEGORIES_BY, required = false) String sortBy,
@@ -79,4 +100,6 @@ public class CategoryController {
         CategoryDTO savedCategoryDTO = categoryService.updateCategory(categoryDTO, categoryId);
         return new ResponseEntity<>(savedCategoryDTO, HttpStatus.OK);
     }
+
+
 }
