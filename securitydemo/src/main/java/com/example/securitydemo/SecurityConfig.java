@@ -54,6 +54,15 @@ public class SecurityConfig {
         // 保護されたURLへアクセスすると、Spring Securityは
         // HTTP Basic認証を要求します。
         http.httpBasic(withDefaults());
+
+        // ここまで設定したSpring Securityの内容をもとに、
+        // SecurityFilterChainを構築して返します。
+        //
+        // @Beanが付いているため、returnされたSecurityFilterChainは
+        // SpringコンテナにBeanとして登録されます。
+        //
+        // Spring Securityは、このSecurityFilterChainを使用して
+        // 実際のHTTPリクエストに対するセキュリティ処理を行います。
         return http.build();
     }
 }
