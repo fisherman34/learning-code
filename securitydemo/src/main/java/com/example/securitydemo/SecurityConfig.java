@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -40,6 +41,24 @@ public class SecurityConfig {
         // authenticated()
         // → 認証済み（ログイン済み）のユーザーだけアクセスを許可します。
         http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
+        // sessionManagement(...)
+        // → Spring SecurityにおけるHTTPセッションの管理方法を設定します。
+        //
+        // sessionCreationPolicy(...)
+        // → 「認証情報などを保持するためのHTTPセッションを、
+        //    Spring Securityがどのように扱うか」を指定します。
+        //
+        // SessionCreationPolicy.STATELESS
+        // → Spring SecurityがHTTPセッションを作成・利用しない設定です。
+        // つまり、1回目のHTTPリクエストで認証した情報を
+        // HTTPセッションに保存して、次回のリクエストで再利用することはしません。
+        // そのため、各HTTPリクエストは基本的に独立して処理され、
+        // リクエストごとに認証情報（このコードではHTTP Basic認証の
+        // ユーザー名・パスワードなど）が送信される必要があります。
+        // REST APIなど、サーバー側でログイン状態をセッション管理しない
+        // ステートレスなアプリケーションでよく使用されます。
+        http.sessionManagement(session
+                -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         //http.formLogin(withDefaults());
 
         // HTTP Basic認証を有効にします。
