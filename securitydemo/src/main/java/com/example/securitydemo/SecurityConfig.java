@@ -12,6 +12,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -307,9 +309,24 @@ public class SecurityConfig {
                 //
                 // したがって、ここではパスワードとして
                 // 「password1」を使用しています。 //
-                // ※ {noop} は学習・テスト用には便利ですが、
-                // 本番環境で平文パスワードを使用することは推奨されません。
-                .password("{noop}password1")
+
+                /*
+                passwordEncoder()
+                 → Spring Securityで使用するPasswordEncoderを取得します。
+
+                このコードでは、下の@Beanで定義した
+                BCryptPasswordEncoderのインスタンスが返されます。
+
+                BCryptPasswordEncoderは、パスワードをBCryptアルゴリズムを
+                使用してハッシュ化するためのPasswordEncoder実装です。
+                 */
+
+                /*
+                encode("password1")
+                 → 平文のパスワード「password1」を
+                BCryptを使用してハッシュ化します。
+                 */
+                .password(passwordEncoder().encode("password1"))
 
                 // roles("USER")
                 // → このユーザーに「USER」というロールを付与します。
@@ -336,7 +353,7 @@ public class SecurityConfig {
                 .build();
 
         UserDetails admin = User.withUsername("admin")
-                .password("{noop}adminPass") // {noop}はパスワードを平文で扱うことを示す
+                .password(passwordEncoder().encode("adminPass"))
                 .roles("ADMIN")
                 .build();
 
@@ -396,5 +413,10 @@ public class SecurityConfig {
         // 「user1」と「admin」の2人のユーザー情報をメモリ上に登録しています。
         // そのため、データベースを使用せずにSpring Securityの認証機能をテストできます。
 //        return new InMemoryUserDetailsManager(user1, admin);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
