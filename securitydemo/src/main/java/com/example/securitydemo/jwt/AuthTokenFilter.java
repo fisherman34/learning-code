@@ -22,6 +22,22 @@ OncePerRequestFilter
  →　Spring Frameworkが提供するフィルターの基底クラスです。
 　　毎回のHTTPリクエストに対して、通常1回だけフィルター処理を実行するためのクラス
 　　doFilterInternal() をオーバーライドして、実際のJWT認証処理を実装します。
+
+一般的に言えば、AuthTokenFilter は「毎回のHTTPリクエストを見て、JWTがあればそのユーザーをSpring Securityの
+認証情報としてセットする」役割を持つフィルターです。
+ざっくり流れはこうです。
+ • リクエストが来る
+ • AuthTokenFilter が動く
+ • Authorization: Bearer ... 形式のJWTを取り出す
+ • JwtUtils.validateJwtToken() で署名・期限チェックをする
+ • 問題なければ、JWTからユーザー名を取り出す
+ • UserDetailsService からそのユーザーの情報を取得する
+ • UsernamePasswordAuthenticationToken を作って
+ • SecurityContextHolder に入れる
+ • その後のAPIやControllerで「このユーザーは認証済みだ」と認識される
+つまり、これは「ログイン済みのJWTを受け取り、Spring Securityがそのユーザーとしてアクセスを許可できるようにする入口」です。
+AuthTokenFilter は本体の認証ロジックではなく、「JWTを見て認証状態を埋め込む役割」を担っています。
+ JwtUtils が JWT の生成/検証を担当し、AuthTokenFilter がその結果を Spring Security に反映させる感じです。
 */
 @Component
 public class AuthTokenFilter extends OncePerRequestFilter {
