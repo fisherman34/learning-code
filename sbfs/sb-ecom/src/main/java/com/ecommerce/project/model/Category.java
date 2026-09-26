@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * このクラスをJPAのエンティティとして扱うことを指定する。
+ * @Entity →　このクラスをJPAのエンティティとして扱うことを指定する。
  *
  * name属性で、JPQL上で使用するエンティティ名を「categories」に指定する。
  */
