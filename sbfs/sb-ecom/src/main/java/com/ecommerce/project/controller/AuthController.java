@@ -13,7 +13,9 @@ import com.ecommerce.project.security.response.UserInfoResponse;
 import com.ecommerce.project.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,10 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -65,15 +64,21 @@ public class AuthController {
         }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        String jwtToken = jwtUtils.generateTokenFromUsername(userDetails);
+
+        ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+
         List<String> roles = userDetails.getAuthorities().stream()  // ユーザーが持っている権限の一覧を取得します。
                 .map(item -> item.getAuthority())  // 各権限（GrantedAuthority）から、権限名の文字列を取得します。
                 .collect(Collectors.toList());
-        UserInfoResponse response = new UserInfoResponse(userDetails.getId(),
-                userDetails.getUsername(), roles, jwtToken);
 
-        return ResponseEntity.ok(response);
+        UserInfoResponse response = new UserInfoResponse(userDetails.getId(),
+                userDetails.getUsername(), roles, jwtCookie.toString());
+
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,  // HttpHeaders.SET_COOKIE：HTTPヘッダーの「Set-Cookie」を表す定数。
+                jwtCookie.toString())  // ResponseCookieオブジェクトを文字列に変換して、HTTPレスポンスヘッダーに追加します。
+                .body(response);  // HTTPレスポンスのボディ（本文）にresponseを設定する。
     }
 
     @PostMapping("/signup")
@@ -127,5 +132,47 @@ public class AuthController {
         userRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+    }
+
+    /*
+    Authentication authentication は、HTTPリクエストのパラメータとしてクライアントから直接送られてくるものではありません。
+    Spring MVC が Spring Security の SecurityContext から取得し、メソッド引数に渡します。
+    このアプリでは、次の流れで設定されます。
+    1. /api/auth/signin でログインすると、JWT を含む Cookie がレスポンスに設定されます。
+    2. 次回以降のリクエストでブラウザがその Cookie を送ると、AuthTokenFilter が JWT を検証します。
+    3. 検証に成功すると、フィルターが SecurityContextHolder に Authentication を設定します。
+    4. /api/auth/username の処理時に、Spring MVC がその Authentication を currentUserName に渡します。
+       authentication.getName() は認証されたユーザー名を返します。
+     */
+    @GetMapping("/username")
+    public String currentUserName(Authentication authentication) {
+        if (authentication != null && authentication.isAuthenticated()) {
+            return authentication.getName();
+        } else {
+            return "";
+        }
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<?> getUserDetails(Authentication authentication) {
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        List<String> roles = userDetails.getAuthorities().stream()  // ユーザーが持っている権限の一覧を取得します。
+                .map(item -> item.getAuthority())  // 各権限（GrantedAuthority）から、権限名の文字列を取得します。
+                .collect(Collectors.toList());
+
+        UserInfoResponse response = new UserInfoResponse(userDetails.getId(),
+                userDetails.getUsername(), roles);
+
+        return ResponseEntity.ok().body(response);
+    }
+
+    // ログイン中のユーザーをログアウトさせるために、JWTを保存しているCookieを削除するメソッド
+    @PostMapping("/signout")
+    public ResponseEntity<?> signoutUser() {
+        ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE,
+                        cookie.toString())
+                .body(new MessageResponse("You've been signed out!"));
     }
 }
