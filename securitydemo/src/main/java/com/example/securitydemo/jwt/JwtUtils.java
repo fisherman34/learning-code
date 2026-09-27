@@ -147,8 +147,9 @@ public class JwtUtils {
         return null;
 
     }
-    // Generating token from username
+
     /*
+    Generating token from username
     UserDetailsには、認証されたユーザーの
     ユーザー名、パスワード、権限（Authorities）などの
     ユーザー情報が含まれています。

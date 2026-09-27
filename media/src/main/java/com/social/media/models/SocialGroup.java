@@ -20,7 +20,7 @@ public class SocialGroup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // @ManyToMany は、SocialUserエンティティとGroupエンティティが
+    // @ManyToMany は、SocialUserエンティティとSocialGroupエンティティが
     // 多対多（Many-to-Many）の関係であることを指定するアノテーション
     //
     // mappedBy = "groups" は、

@@ -499,9 +499,6 @@ public class SecurityConfig {
     AuthenticationConfiguration builder
       → AuthenticationConfiguration は、Spring Securityが用意しているクラスで、Spring Securityの認証設定から
       AuthenticationManager を取得するために使用します。
-      そして、AuthenticationConfiguration builder
-      と書くだけで、SpringがこのオブジェクトをDIしてくれます。
-
     */
     @Bean
     public AuthenticationManager authenticationManager(

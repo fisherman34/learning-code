@@ -81,12 +81,12 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
         final Map<String, Object> body = new HashMap<>();  // final を付けると、body という参照変数に、別のオブジェクトを再代入することは禁止
         body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
         body.put("error", "Unauthorized");
-        body.put("message", authException.getMessage());  // request.getServletPath() → HTTPリクエストからServletのパスを取得するメソッド。
-        body.put("path", request.getServletPath());
+        body.put("message", authException.getMessage()); 
+        body.put("path", request.getServletPath());   // request.getServletPath() → HTTPリクエストからServletのパスを取得するメソッド。
 
         final ObjectMapper mapper = new ObjectMapper();  // ObjectMapper → JavaオブジェクトとJSON形式のデータを相互変換するためのJacksonライブラリのクラス。
         /*
-         * mapper.writeValue(...)
+         * mapper.writeValue(出力先, 書き込むJavaオブジェクト)
          * → ObjectMapperのwriteValue()メソッドを使用して、
          *   JavaオブジェクトをJSON形式に変換し、
          *   指定した出力先へ書き込む。
@@ -98,7 +98,9 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
          *
          * body
          * → JSONに変換するJavaオブジェクト。
-         * → このコードではMap<String, Object>型のMap。
+         * 
+         * このコードではJavaの Map オブジェクト body をJSONに変換して、
+         * HTTPレスポンスの本文（Response Body）としてクライアントに送信する
          */
         mapper.writeValue(response.getOutputStream(), body);
     }

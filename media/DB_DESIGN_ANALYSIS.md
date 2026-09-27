@@ -37,7 +37,7 @@ spring.datasource.url=jdbc:h2:mem:test
 | カラム | 内容 |
 |---|---|
 | `id` | 主キー。自動採番 |
-| `user_id` | `SocialUser.id` を参照する外部キー |
+| `user_id` | `SocialUser.id` を参照する nullable な外部キー |
 
 定義は次のとおりです。
 
@@ -47,10 +47,10 @@ spring.datasource.url=jdbc:h2:mem:test
 private SocialUser socialUser;
 ```
 
-これは、複数の投稿が1人のユーザーに属することを表します。
+1人のユーザーは複数の投稿を持てます。`@ManyToOne` と `@JoinColumn` の既定値では、投稿側のユーザー参照は nullable で、ユーザー未設定の投稿も許されます。
 
 ```text
-SocialUser 1 ---- N Post
+SocialUser 0..1 ---- 0..N Post
 ```
 
 `SocialUser` 側では、次のように逆方向の関連を定義しています。
@@ -71,7 +71,8 @@ private List<Post> posts = new ArrayList<>();
 | カラム | 内容 |
 |---|---|
 | `id` | 主キー。自動採番 |
-| `social_user` | `SocialUser.id` を参照する外部キー |
+| `social_user` | `SocialUser.id` を参照する nullable かつ一意な外部キー |
+| `description` | プロフィールの説明 |
 
 定義は次のとおりです。
 
@@ -90,15 +91,13 @@ private SocialUser user;
 private SocialProfile socialProfile;
 ```
 
-したがって、設計上は次の1対1関係です。
+`@OneToOne` によって `social_user` は一意になり、1ユーザーにつき最大1プロフィールです。`@JoinColumn` の既定値では外部キーは nullable のため、DB上はユーザー未設定のプロフィールも許されます。
 
 ```text
-SocialUser 1 ---- 1 SocialProfile
+SocialUser 0..1 ---- 0..1 SocialProfile
 ```
 
-プロフィールテーブルの `social_user` には、ユーザーIDが格納されます。
-
-ただし、DB上で必ず1ユーザー1プロフィールを保証したい場合は、`social_user` にユニーク制約が存在することを確認する必要があります。
+プロフィールテーブルの `social_user` には、関連付けられた場合にユーザーIDが格納されます。実際のDBスキーマがモデル定義どおりかは、稼働環境のDDLでも確認してください。
 
 ### 2.4 `SocialGroup` テーブル
 
@@ -148,8 +147,8 @@ SocialUser N ---- N SocialGroup
 
 ```mermaid
 erDiagram
-    SOCIAL_USER ||--o{ POST : creates
-    SOCIAL_USER ||--o| SOCIAL_PROFILE : has
+    SOCIAL_USER o|--o{ POST : creates
+    SOCIAL_USER o|--o| SOCIAL_PROFILE : has
     SOCIAL_USER ||--o{ USER_GROUP : belongs_to
     SOCIAL_GROUP ||--o{ USER_GROUP : contains
 
@@ -159,12 +158,13 @@ erDiagram
 
     POST {
         bigint id PK
-        bigint user_id FK
+        bigint user_id FK "nullable"
     }
 
     SOCIAL_PROFILE {
         bigint id PK
-        bigint social_user FK
+        bigint social_user FK "unique, nullable"
+        varchar description
     }
 
     SOCIAL_GROUP {
