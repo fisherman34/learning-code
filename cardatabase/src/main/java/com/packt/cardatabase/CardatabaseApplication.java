@@ -12,6 +12,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.Arrays;
 
+/*
+CommandLineRunner は、Spring Bootアプリケーションの起動が完了した直後に、指定した処理を
+自動実行するためのインターフェースです。
+ */
+
 @SpringBootApplication
 public class CardatabaseApplication implements CommandLineRunner {
 
@@ -43,6 +48,13 @@ public class CardatabaseApplication implements CommandLineRunner {
         SpringApplication.run(CardatabaseApplication.class, args);
     }
 
+    /*
+    public void run(String... args) throws Exception {
+        // ...
+    }
+    　→　　CommandLineRunner の run() を使ってアプリケーション起動時に初期データを
+          データベースへ登録しています。
+     */
     @Override
     public void run(String... args) throws Exception {
         // Add owner objects and save these to db
@@ -50,9 +62,12 @@ public class CardatabaseApplication implements CommandLineRunner {
         Owner owner2 = new Owner("Mary" , "Robinson");
         orepository.saveAll(Arrays.asList(owner1, owner2));
 
-        repository.save(new Car("Ford", "Mustang", "Red", "ADF-1121", 2023, 59000, owner1));
-        repository.save(new Car("Nissan", "Leaf", "White", "SSJ-3002", 2020, 29000, owner2));
-        repository.save(new Car("Toyota", "Prius", "Silver", "KKO-0212", 2022, 39000, owner2));
+        repository.save(new Car("Ford", "Mustang", "Red",
+                "ADF-1121", 2023, 59000, owner1));
+        repository.save(new Car("Nissan", "Leaf", "White",
+                "SSJ-3002", 2020, 29000, owner2));
+        repository.save(new Car("Toyota", "Prius", "Silver",
+                "KKO-0212", 2022, 39000, owner2));
 
         // Fetch all cars and log to console
         for (Car car : repository.findAll()) {
