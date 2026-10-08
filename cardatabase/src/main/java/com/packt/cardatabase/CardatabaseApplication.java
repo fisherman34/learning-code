@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
 import java.util.Arrays;
 
@@ -14,6 +15,7 @@ CommandLineRunner は、Spring Bootアプリケーションの起動が完了し
 自動実行するためのインターフェースです。
  */
 
+@EnableMethodSecurity
 @SpringBootApplication
 public class CardatabaseApplication implements CommandLineRunner {
 
