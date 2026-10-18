@@ -15,6 +15,19 @@ public class AuthUtil {
     UserRepository userRepository;
 
     public String loggedInEmail() {
+        /*
+        SecurityContextHolder
+        現在の実行処理に対応するセキュリティコンテキストにアクセスするためのクラス。
+        通常の Web リクエストでは、Spring Security が認証情報を管理する。
+
+        getContext()
+        現在の SecurityContext を取得する。
+        SecurityContext は、認証情報を保持するオブジェクト。
+
+        getAuthentication()
+        SecurityContext から Authentication オブジェクトを取得する。
+        Authentication には、認証されたユーザーの情報や権限などが含まれる。
+         */
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = userRepository.findByUserName(authentication.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + authentication.getName()));
